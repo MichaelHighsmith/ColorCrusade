@@ -17,6 +17,7 @@ public class MenuState extends State {
 
     public MenuState(GameStateManager gsm) {
         super(gsm);
+        cam.setToOrtho(false, ColorCrusade.WIDTH / 2, ColorCrusade.HEIGHT / 2);
         background = new Texture("background.png");
         playBtn = new Texture("playbtn.png");
     }
@@ -37,9 +38,10 @@ public class MenuState extends State {
 
     @Override
     public void render(SpriteBatch sb) {
+        sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        sb.draw(background, 0, 0, ColorCrusade.WIDTH, ColorCrusade.HEIGHT);
-        sb.draw(playBtn, (ColorCrusade.WIDTH / 2) - (playBtn.getWidth() / 2), ColorCrusade.HEIGHT / 2);
+        sb.draw(background, 0, 0);
+        sb.draw(playBtn, cam.position.x - playBtn.getWidth() / 2, cam.position.y);
         sb.end();
     }
 
