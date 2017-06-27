@@ -13,7 +13,8 @@ import static com.satyrlabs.colorcrusade.Constants.*;
 
 public class Rocket {
 
-    private static final int ACCELERATION = 1;
+    private static final float ACCELERATION = 0.5f;
+    private static final float MAX_VELOCITY = 400.0f;
     private Vector2 position;
     private Vector2 velocity;
 
@@ -26,7 +27,9 @@ public class Rocket {
     }
 
     public void update(float dt){
-        velocity.add(0, ACCELERATION);
+        if(velocity.y < MAX_VELOCITY){
+            velocity.add(0, ACCELERATION);
+        }
         velocity.scl(dt); //scale the acceleration for each update
         position.add(0, velocity.y);
 
