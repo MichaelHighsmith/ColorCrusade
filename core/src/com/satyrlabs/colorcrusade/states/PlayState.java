@@ -32,6 +32,8 @@ public class PlayState extends State {
         for (int i = 1; i <= BLOCK_COUNT; i++){
             blocks.add(new Block(i * (BLOCK_SPACING + Block.BLOCK_WIDTH)));
         }
+
+
     }
 
     @Override
@@ -48,10 +50,16 @@ public class PlayState extends State {
         rocket.update(dt);
         cam.position.y = rocket.getPosition().y + 50;
 
-        for(Block block : blocks){
+        for(int i = 0; i < blocks.size; i++){
+            Block block = blocks.get(i);
+
             if(cam.position.y - (cam.viewportHeight / 2) > block.getPosBlock1().y + block.getBlock1().getWidth()){
                 block.reposition(block.getPosBlock1().y + ((Block.BLOCK_WIDTH + BLOCK_SPACING) * BLOCK_COUNT));
             }
+
+            //Check if each block is touching the player
+            if(block.collides(rocket.getBounds()))
+                gsm.set(new PlayState(gsm)); //restart the game
         }
 
         cam.update();
@@ -61,7 +69,7 @@ public class PlayState extends State {
     public void render(SpriteBatch sb){
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        sb.draw(bg, cam.position.x - (cam.viewportWidth / 2), 0);
+        sb.draw(bg, 0, cam.position.y - (cam.viewportHeight / 2));
         sb.draw(rocket.getTexture(), rocket.getPosition().x, rocket.getPosition().y);
         for(Block block : blocks){
             sb.draw(block.getBlock1(), block.getPosBlock1().x, block.getPosBlock1().y);
@@ -73,6 +81,11 @@ public class PlayState extends State {
 
     @Override
     public void dispose(){
+        bg.dispose();
+        rocket.dispose();
+        for(Block block : blocks){
+            block.dispose();
+        }
 
     }
 }
