@@ -14,8 +14,7 @@ public class BlockBlue {
 
     public static final int BLOCK_WIDTH = 52;
 
-    private static final int FLUCTUATION = 100;
-    private static final int BLOCK_GAP = 50;
+    private static final int FLUCTUATION = 200;
 
     private Texture blockBlue;
     private Vector2 posBlockBlue;
@@ -26,7 +25,7 @@ public class BlockBlue {
         blockBlue = new Texture("block_blue.png");
         rand = new Random();
 
-        posBlockBlue = new Vector2(rand.nextInt(FLUCTUATION) + BLOCK_GAP, y);
+        posBlockBlue = new Vector2(rand.nextInt(FLUCTUATION), y);
 
         boundsBlockBlue = new Rectangle(posBlockBlue.x, posBlockBlue.y, blockBlue.getWidth(), blockBlue.getHeight());
         boundsBlockBlue.setPosition(posBlockBlue.x, posBlockBlue.y);
@@ -41,7 +40,7 @@ public class BlockBlue {
     }
 
     public void reposition(float y){
-        posBlockBlue.set(rand.nextInt(FLUCTUATION) + BLOCK_GAP, y);
+        posBlockBlue.set(rand.nextInt(FLUCTUATION), y);
         boundsBlockBlue.setPosition(posBlockBlue.x, posBlockBlue.y);
     }
 

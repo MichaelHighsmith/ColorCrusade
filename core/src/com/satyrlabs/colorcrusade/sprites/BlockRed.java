@@ -14,8 +14,7 @@ public class BlockRed {
 
     public static final int BLOCK_WIDTH = 52;  //maybe change this based upon block size
 
-    private static final int FLUCTUATION = 130;
-    private static final int BLOCK_GAP = 100;
+    private static final int FLUCTUATION = 200;
 
     private Texture blockRed;
     private Vector2 posBlockRed;
@@ -26,7 +25,7 @@ public class BlockRed {
         blockRed = new Texture("block.png");
         rand = new Random();
 
-        posBlockRed = new Vector2(rand.nextInt(FLUCTUATION) + BLOCK_GAP, y);
+        posBlockRed = new Vector2(rand.nextInt(FLUCTUATION), y);
 
         boundsBlockRed = new Rectangle(posBlockRed.x, posBlockRed.y, blockRed.getWidth(), blockRed.getHeight());
         boundsBlockRed.setPosition(posBlockRed.x, posBlockRed.y);
@@ -41,13 +40,12 @@ public class BlockRed {
     }
 
     public void reposition(float y){
-        posBlockRed.set(rand.nextInt(FLUCTUATION) + BLOCK_GAP, y);
+        posBlockRed.set(rand.nextInt(FLUCTUATION), y);
         boundsBlockRed.setPosition(posBlockRed.x, posBlockRed.y);
     }
 
     public boolean collides(Rectangle player){
         return player.overlaps(boundsBlockRed);
-        //TODO adjust this or statement to take into account whether the color variable is set to 1 or 2 (blue of red) for collision)
     }
 
     public void dispose(){
