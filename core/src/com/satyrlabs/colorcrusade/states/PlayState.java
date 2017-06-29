@@ -1,9 +1,13 @@
 package com.satyrlabs.colorcrusade.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.satyrlabs.colorcrusade.ColorCrusade;
 import com.satyrlabs.colorcrusade.sprites.BlockBlue;
 import com.satyrlabs.colorcrusade.sprites.BlockRed;
@@ -17,6 +21,10 @@ import java.util.Random;
  */
 
 public class PlayState extends State {
+
+    private static final float HUD_MARGIN = 20.0f;
+    public static final float HUD_FONT_REFERENCE_SCREEN_SIZE = 480.0f;
+
     private static final int BLOCK_SPACING_RED = 60;
     private static final int BLOCK_COUNT = 4;
 
@@ -29,15 +37,25 @@ public class PlayState extends State {
 
     private Rocket rocket;
     private Texture bg;
+    private int score;
+    private int highScore;
 
     private int colorToggle = 1;
+
+    BitmapFont font;
+
 
     private Array<BlockRed> blocksRed;
     private Array<BlockBlue> blocksBlue;
     private Array<Coin> coins;
 
     public PlayState(GameStateManager gsm){
+
         super(gsm);
+
+        Preferences prefs = Gdx.app.getPreferences("My Preferences");
+        highScore = prefs.getInteger("highScore", 0);
+
         rocket = new Rocket(50, 20);
         cam.setToOrtho(false, ColorCrusade.WIDTH / 2, ColorCrusade.HEIGHT / 2);
         bg = new Texture("background.png");
@@ -46,8 +64,10 @@ public class PlayState extends State {
         blocksBlue = new Array<BlockBlue>();
         coins = new Array<Coin>();
 
+        font = new BitmapFont();
+
+
         for (int i = 1; i <= BLOCK_COUNT; i++){
-            rand = new Random();
             blocksRed.add(new BlockRed(i * (BLOCK_SPACING_RED + BlockRed.BLOCK_WIDTH)));
         }
 
@@ -85,12 +105,10 @@ public class PlayState extends State {
 
         for(int i = 0; i < blocksRed.size; i++){
             BlockRed blockRed = blocksRed.get(i);
-
             //If a red block runs off screen, reposition it towards the top of the screen
             if(cam.position.y - (cam.viewportHeight / 2) > blockRed.getPosBlockRed().y + blockRed.getBlockRed().getWidth()){
                 blockRed.reposition(blockRed.getPosBlockRed().y + ((BlockRed.BLOCK_WIDTH + BLOCK_SPACING_RED) * BLOCK_COUNT));
             }
-
             //Check if each red block is touching the player
             if(blockRed.collides(rocket.getBounds()) && colorToggle == 2)
                 gsm.set(new PlayState(gsm)); //restart the game
@@ -98,12 +116,10 @@ public class PlayState extends State {
 
         for(int i = 0; i < blocksBlue.size; i++){
             BlockBlue blockBlue = blocksBlue.get(i);
-
             //If a blue block runs off screen, reposition it towards the top of the screen
             if(cam.position.y - (cam.viewportHeight / 2) > blockBlue.getPosBlockBlue().y + blockBlue.getBlockBlue().getWidth()){
                 blockBlue.reposition(blockBlue.getPosBlockBlue().y + ((BlockBlue.BLOCK_WIDTH + BLOCK_SPACING_BLUE) * BLOCK_COUNT));
             }
-
             //Check if each blue block is touching the player
             if(blockBlue.collides(rocket.getBounds()) && colorToggle == 1)
                 gsm.set(new PlayState(gsm)); //restart the game
@@ -112,15 +128,21 @@ public class PlayState extends State {
         //Check for coin collisions
         for(int i = 0; i < coins.size; i++){
             Coin coin = coins.get(i);
-
             //If coins fall off screen, bounce them to the top
             if(cam.position.y - (cam.viewportHeight / 2) > coin.getPosCoin().y + coin.getCoin().getWidth()){
                 coin.reposition(coin.getPosCoin().y + (COIN_SPACING * COIN_COUNT));
             }
-
-            //If the player collids with a coin, bounce it to the top TODO: update the score too
+            //If the player collides with a coin, bounce it to the top TODO: update the score too
             if(coin.collides(rocket.getBounds())){
                 coin.reposition(coin.getPosCoin().y + (COIN_SPACING * COIN_COUNT));
+                score += 2;
+                //if new highscore, update it
+                if(score >= highScore){
+                    highScore = score;
+                    Preferences prefs = Gdx.app.getPreferences("My Preferences");
+                    prefs.putInteger("highScore", highScore);
+                    prefs.flush();
+                }
             }
         }
 
@@ -150,6 +172,9 @@ public class PlayState extends State {
         for(Coin coin : coins){
             sb.draw(coin.getCoin(), coin.getPosCoin().x, coin.getPosCoin().y);
         }
+        font.draw(sb, "Score: " + score, cam.position.x / 4, rocket.getPosition().y - 10);//Change these so that they aren't constants
+        font.draw(sb, "High Score: " + highScore, (cam.position.x * 3) / 4, rocket.getPosition().y - 10);
+
         sb.end();
 
     }
@@ -167,6 +192,6 @@ public class PlayState extends State {
         for(Coin coin : coins){
             coin.dispose();
         }
-
+        font.dispose();
     }
 }
