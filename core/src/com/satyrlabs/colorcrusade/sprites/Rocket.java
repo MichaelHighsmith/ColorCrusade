@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.satyrlabs.colorcrusade.ColorCrusade;
 import com.satyrlabs.colorcrusade.Constants;
 
 import static com.satyrlabs.colorcrusade.Constants.*;
@@ -16,7 +17,7 @@ import static com.satyrlabs.colorcrusade.Constants.*;
 public class Rocket {
 
     private static final float ACCELERATION = 0.5f;
-    private static final float MAX_VELOCITY = 300.0f;
+    private static final float MAX_VELOCITY = 200.0f;
     private Vector2 position;
     private Vector2 velocity;
     private Rectangle bounds;
@@ -28,8 +29,8 @@ public class Rocket {
         position = new Vector2(x, y);
         velocity = new Vector2(0, 0);
         texture = new Texture("rocketanimation.png");
-        rocketAnimation = new Animation(new TextureRegion(texture), 3, 0.5f);
-        bounds = new Rectangle(x, y, texture.getWidth() / 3, texture.getHeight());
+        rocketAnimation = new Animation(new TextureRegion(texture), 4, 0.5f);
+        bounds = new Rectangle(x, y, texture.getWidth() / 4, texture.getHeight());
 
     }
 
@@ -47,6 +48,15 @@ public class Rocket {
         float accelerometerInput = Gdx.input.getAccelerometerX() / (GRAVITATIONAL_ACCELERATION * ACCELEROMETER_SENSITIVITY);
 
         position.x -= dt * accelerometerInput * ROCKET_MOVEMENT_SPEED;
+
+        //Stop the rocket from going off screen
+        if(position.x < 0 - (texture.getWidth() / 4)){
+            position.x = ColorCrusade.WIDTH / 2;
+        }
+        if(position.x > ColorCrusade.WIDTH /2){
+            position.x = 0 - (texture.getWidth() / 4);
+        }
+
 
         bounds.setPosition(position.x, position.y);
     }

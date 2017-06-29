@@ -25,14 +25,14 @@ public class PlayState extends State {
     private static final float HUD_MARGIN = 20.0f;
     public static final float HUD_FONT_REFERENCE_SCREEN_SIZE = 480.0f;
 
-    private static final int BLOCK_SPACING_RED = 60;
-    private static final int BLOCK_COUNT = 4;
+    private static final int BLOCK_SPACING_RED = 90;
+    private static final int BLOCK_COUNT = 6;
 
-    private static final int BLOCK_SPACING_BLUE = 80;
-    private static final int BLOCK_COUNT_BLUE = 4;
+    private static final int BLOCK_SPACING_BLUE = 130;
+    private static final int BLOCK_COUNT_BLUE = 6;
 
     private static final int COIN_COUNT = 10;
-    private static final int COIN_SPACING = 50;
+    private static final int COIN_SPACING = 60;
     private Random rand;
 
     private Rocket rocket;
@@ -172,8 +172,8 @@ public class PlayState extends State {
         for(Coin coin : coins){
             sb.draw(coin.getCoin(), coin.getPosCoin().x, coin.getPosCoin().y);
         }
-        font.draw(sb, "Score: " + score, cam.position.x / 4, rocket.getPosition().y - 10);//Change these so that they aren't constants
-        font.draw(sb, "High Score: " + highScore, (cam.position.x * 3) / 4, rocket.getPosition().y - 10);
+        font.draw(sb, "Score: " + score, 0, rocket.getPosition().y - 10);//Change these so that they aren't constants
+        font.draw(sb, "High Score: " + highScore, ColorCrusade.WIDTH / 4 - 10, rocket.getPosition().y - 10);
 
         sb.end();
 
