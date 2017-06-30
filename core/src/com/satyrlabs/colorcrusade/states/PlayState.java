@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.satyrlabs.colorcrusade.ColorCrusade;
+import com.satyrlabs.colorcrusade.sprites.AsteroidBeltBlue;
+import com.satyrlabs.colorcrusade.sprites.AsteroidBeltRed;
 import com.satyrlabs.colorcrusade.sprites.BlockBlue;
 import com.satyrlabs.colorcrusade.sprites.BlockRed;
 import com.satyrlabs.colorcrusade.sprites.Coin;
@@ -35,6 +37,9 @@ public class PlayState extends State {
     private static final int COIN_SPACING = 60;
     private Random rand;
 
+    private static final int ASTEROID_SPACING_RED = 4000;
+    private static final int ASTEROID_SPACING_BLUE = 4000;
+
     private Rocket rocket;
     private Texture bg;
     private int score;
@@ -48,6 +53,8 @@ public class PlayState extends State {
     private Array<BlockRed> blocksRed;
     private Array<BlockBlue> blocksBlue;
     private Array<Coin> coins;
+    private AsteroidBeltRed asteroidBeltRed;
+    private AsteroidBeltBlue asteroidBeltBlue;
 
     public PlayState(GameStateManager gsm){
 
@@ -63,6 +70,9 @@ public class PlayState extends State {
         blocksRed = new Array<BlockRed>();
         blocksBlue = new Array<BlockBlue>();
         coins = new Array<Coin>();
+        asteroidBeltRed = new AsteroidBeltRed(ASTEROID_SPACING_RED);
+        asteroidBeltBlue = new AsteroidBeltBlue(ASTEROID_SPACING_BLUE);
+
 
         font = new BitmapFont();
 
@@ -111,7 +121,7 @@ public class PlayState extends State {
             }
             //Check if each red block is touching the player
             if(blockRed.collides(rocket.getBounds()) && colorToggle == 2)
-                gsm.set(new PlayState(gsm)); //restart the game
+                gsm.set(new MenuState(gsm)); //restart the game
         }
 
         for(int i = 0; i < blocksBlue.size; i++){
@@ -122,7 +132,7 @@ public class PlayState extends State {
             }
             //Check if each blue block is touching the player
             if(blockBlue.collides(rocket.getBounds()) && colorToggle == 1)
-                gsm.set(new PlayState(gsm)); //restart the game
+                gsm.set(new MenuState(gsm)); //restart the game
         }
 
         //Check for coin collisions
@@ -146,6 +156,22 @@ public class PlayState extends State {
             }
         }
 
+        //Logic for red asteroid belt repositioning/collision
+        if(cam.position.y  - (cam.viewportHeight / 2) > asteroidBeltRed.getPosAsteroidRed().y + asteroidBeltRed.getAsteroidRed().getHeight()){
+            asteroidBeltRed.reposition(asteroidBeltRed.getPosAsteroidRed().y + ASTEROID_SPACING_RED);
+        }
+        if(asteroidBeltRed.collides(rocket.getBounds()) && colorToggle == 2){
+            gsm.set(new MenuState(gsm)); //restart the game
+        }
+
+        //Logic for blue asteroid belt repositioning/collision
+        if(cam.position.y  - (cam.viewportHeight / 2) > asteroidBeltBlue.getPosAsteroidBlue().y + asteroidBeltBlue.getAsteroidBlue().getHeight()){
+            asteroidBeltBlue.reposition(asteroidBeltBlue.getPosAsteroidBlue().y + ASTEROID_SPACING_BLUE);
+        }
+        if(asteroidBeltBlue.collides(rocket.getBounds()) && colorToggle == 1){
+            gsm.set(new MenuState(gsm)); //restart the game
+        }
+
         cam.update();
     }
 
@@ -156,9 +182,9 @@ public class PlayState extends State {
         sb.draw(bg, 0, cam.position.y - (cam.viewportHeight / 2));
         //change the rockets color depending on the color selected
         if(colorToggle == 1){
-            sb.setColor(1,0,0,1);
+            sb.setColor(1,0.2f,0,1);
         } else if (colorToggle == 2){
-            sb.setColor(0, 0, 1, 1);
+            sb.setColor(0, 0.3f, 0.7f, 1);
         }
         sb.draw(rocket.getTexture(), rocket.getPosition().x, rocket.getPosition().y);
         //set the color back to white
@@ -172,7 +198,11 @@ public class PlayState extends State {
         for(Coin coin : coins){
             sb.draw(coin.getCoin(), coin.getPosCoin().x, coin.getPosCoin().y);
         }
-        font.draw(sb, "Score: " + score, 0, rocket.getPosition().y - 10);//Change these so that they aren't constants
+        sb.draw(asteroidBeltRed.getAsteroidRed(), asteroidBeltRed.getPosAsteroidRed().x, asteroidBeltRed.getPosAsteroidRed().y);
+        sb.draw(asteroidBeltBlue.getAsteroidBlue(), asteroidBeltBlue.getPosAsteroidBlue().x, asteroidBeltBlue.getPosAsteroidBlue().y);
+
+        //TODO add an alien that moves back and forth.  They start spawning if score is high enough
+        font.draw(sb, "Score: " + score, 0, rocket.getPosition().y - 10);
         font.draw(sb, "High Score: " + highScore, ColorCrusade.WIDTH / 4 - 10, rocket.getPosition().y - 10);
 
         sb.end();
@@ -193,5 +223,7 @@ public class PlayState extends State {
             coin.dispose();
         }
         font.dispose();
+        asteroidBeltRed.dispose();
+        asteroidBeltBlue.dispose();
     }
 }

@@ -1,7 +1,9 @@
 package com.satyrlabs.colorcrusade.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.satyrlabs.colorcrusade.ColorCrusade;
 
@@ -17,9 +19,11 @@ public class MenuState extends State {
 
     public MenuState(GameStateManager gsm) {
         super(gsm);
-        cam.setToOrtho(false, ColorCrusade.WIDTH / 2, ColorCrusade.HEIGHT / 2);
-        background = new Texture("background.png");
+        cam.setToOrtho(false, ColorCrusade.WIDTH, ColorCrusade.HEIGHT);
+        background = new Texture("backgroundmenu.png");
         playBtn = new Texture("playbtn.png");
+
+
     }
 
     @Override
@@ -41,7 +45,6 @@ public class MenuState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         sb.draw(background, 0, 0);
-        sb.draw(playBtn, cam.position.x - playBtn.getWidth() / 2, cam.position.y);
         sb.end();
     }
 

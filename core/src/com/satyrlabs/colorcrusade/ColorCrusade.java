@@ -17,7 +17,6 @@ public class ColorCrusade extends ApplicationAdapter {
 	private GameStateManager gsm;
 
 	private SpriteBatch batch;
-	Texture img;
 	
 	@Override
 	public void create () {
@@ -38,6 +37,5 @@ public class ColorCrusade extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
 	}
 }
