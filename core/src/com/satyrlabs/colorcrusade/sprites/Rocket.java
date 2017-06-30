@@ -2,6 +2,7 @@ package com.satyrlabs.colorcrusade.sprites;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -25,6 +26,8 @@ public class Rocket {
     Texture texture;
     private boolean crashed = false;
 
+    public ParticleEffect explosionParticles;
+
 
     public Rocket(int x, int y){
         position = new Vector2(x, y);
@@ -32,6 +35,10 @@ public class Rocket {
         texture = new Texture("rocketanimation.png");
         rocketAnimation = new Animation(new TextureRegion(texture), 4, 0.5f);
         bounds = new Rectangle(x, y, texture.getWidth() / 4, texture.getHeight());
+
+        explosionParticles = new ParticleEffect();
+
+        explosionParticles.load(Gdx.files.internal("particles/explosion.pfx"), Gdx.files.internal("particles"));
 
     }
 
@@ -60,6 +67,9 @@ public class Rocket {
                 position.x = 0 - (texture.getWidth() / 4);
             }
         }
+
+        explosionParticles.update(dt);
+        explosionParticles.setPosition(position.x + texture.getWidth() / 6, position.y + texture.getHeight() / 2);
 
         bounds.setPosition(position.x, position.y);
     }

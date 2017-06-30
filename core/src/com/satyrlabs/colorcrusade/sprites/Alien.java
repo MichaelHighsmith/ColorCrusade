@@ -2,6 +2,7 @@ package com.satyrlabs.colorcrusade.sprites;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -28,6 +29,8 @@ public class Alien {
     private Random rand;
     private boolean crashed = false;
 
+    public ParticleEffect alienParticles;
+
     public Alien(float y){
         alien = new Texture("alienanimation.png");
         alienAnimation = new Animation(new TextureRegion(alien), 3, 0.5f);
@@ -38,6 +41,9 @@ public class Alien {
         velocityAlien = new Vector2(40, 0);
         boundsAlien = new Rectangle(posAlien.x, posAlien.y, alien.getWidth() / 3, alien.getHeight());
         boundsAlien.setPosition(posAlien.x, posAlien.y);
+
+        alienParticles = new ParticleEffect();
+        alienParticles.load(Gdx.files.internal("particles/alienbeam.pfx"), Gdx.files.internal("particles"));
     }
 
     public void update(float dt){
@@ -59,6 +65,9 @@ public class Alien {
             posAlien.add(velocityAlien.x, 0);
             velocityAlien.scl(1 / dt);
         }
+
+        alienParticles.update(dt);
+        alienParticles.setPosition(posAlien.x + (alien.getWidth() / 6), posAlien.y);
 
 
         boundsAlien.setPosition(posAlien.x, posAlien.y);

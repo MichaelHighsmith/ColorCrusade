@@ -63,6 +63,8 @@ public class PlayState extends State {
     private AsteroidBeltBlue asteroidBeltBlue;
     private Alien alien;
 
+
+
     public PlayState(GameStateManager gsm){
 
         super(gsm);
@@ -138,6 +140,7 @@ public class PlayState extends State {
                 //start the explosion countdown and stop the rocket from moving
                 timeLeftGameOverDelay -= dt;
                 rocket.crashRocket();
+
                 if(timeLeftGameOverDelay < 0){
                     gsm.set(new MenuState(gsm));
                 }
@@ -252,11 +255,16 @@ public class PlayState extends State {
         }
         sb.draw(asteroidBeltRed.getAsteroidRed(), asteroidBeltRed.getPosAsteroidRed().x, asteroidBeltRed.getPosAsteroidRed().y);
         sb.draw(asteroidBeltBlue.getAsteroidBlue(), asteroidBeltBlue.getPosAsteroidBlue().x, asteroidBeltBlue.getPosAsteroidBlue().y);
-        
+
         sb.draw(alien.getAlien(), alien.getPosAlien().x, alien.getPosAlien().y);
 
         font.draw(sb, "Score: " + score, 0, rocket.getPosition().y - 10);
         font.draw(sb, "High Score: " + highScore, ColorCrusade.WIDTH / 4 - 10, rocket.getPosition().y - 10);
+
+        if(rocket.isCrashed()){
+            rocket.explosionParticles.draw(sb);
+        }
+        alien.alienParticles.draw(sb);
 
         sb.end();
 
