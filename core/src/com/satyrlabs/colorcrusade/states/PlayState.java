@@ -41,7 +41,7 @@ public class PlayState extends State {
     private static final int ASTEROID_SPACING_RED = 4000;
     private static final int ASTEROID_SPACING_BLUE = 4000;
 
-    private static final int ALIEN_SPACING = 2000;
+    private static final int ALIEN_SPACING = 3500;
 
     private Rocket rocket;
     private Texture bg;
@@ -51,6 +51,9 @@ public class PlayState extends State {
     private int colorToggle = 1;
 
     BitmapFont font;
+
+    public static final float TIME_DELAY_GAME_OVER = 3;
+    private float timeLeftGameOverDelay;
 
 
     private Array<BlockRed> blocksRed;
@@ -78,8 +81,9 @@ public class PlayState extends State {
         asteroidBeltBlue = new AsteroidBeltBlue(ASTEROID_SPACING_BLUE);
         alien = new Alien(ALIEN_SPACING);
 
-
         font = new BitmapFont();
+
+        timeLeftGameOverDelay = 3;
 
 
         for (int i = 1; i <= BLOCK_COUNT; i++){
@@ -102,12 +106,15 @@ public class PlayState extends State {
     @Override
     protected void handleInput(){
         if(Gdx.input.justTouched()){
-            //Change the active color
-            if(colorToggle == 1){
-                colorToggle = 2;
-            } else if(colorToggle == 2){
-                colorToggle = 1;
+            if(!rocket.isCrashed()){
+                //Change the active color
+                if(colorToggle == 1){
+                    colorToggle = 2;
+                } else if(colorToggle == 2){
+                    colorToggle = 1;
+                }
             }
+
         }
 
     }
@@ -127,8 +134,15 @@ public class PlayState extends State {
                 blockRed.reposition(blockRed.getPosBlockRed().y + ((BlockRed.BLOCK_WIDTH + BLOCK_SPACING_RED) * BLOCK_COUNT));
             }
             //Check if each red block is touching the player
-            if(blockRed.collides(rocket.getBounds()) && colorToggle == 2)
-                gsm.set(new MenuState(gsm)); //restart the game
+            if(blockRed.collides(rocket.getBounds()) && colorToggle == 2){
+                //start the explosion countdown and stop the rocket from moving
+                timeLeftGameOverDelay -= dt;
+                rocket.crashRocket();
+                if(timeLeftGameOverDelay < 0){
+                    gsm.set(new MenuState(gsm));
+                }
+            }
+
         }
 
         for(int i = 0; i < blocksBlue.size; i++){
@@ -138,8 +152,15 @@ public class PlayState extends State {
                 blockBlue.reposition(blockBlue.getPosBlockBlue().y + ((BlockBlue.BLOCK_WIDTH + BLOCK_SPACING_BLUE) * BLOCK_COUNT));
             }
             //Check if each blue block is touching the player
-            if(blockBlue.collides(rocket.getBounds()) && colorToggle == 1)
-                gsm.set(new MenuState(gsm)); //restart the game
+            if(blockBlue.collides(rocket.getBounds()) && colorToggle == 1){
+                //start the explosion countdown and stop the rocket from moving
+                timeLeftGameOverDelay -= dt;
+                rocket.crashRocket();
+                if(timeLeftGameOverDelay < 0){
+                    gsm.set(new MenuState(gsm));
+                }
+            }
+
         }
 
         //Check for coin collisions
@@ -168,7 +189,12 @@ public class PlayState extends State {
             asteroidBeltRed.reposition(asteroidBeltRed.getPosAsteroidRed().y + ASTEROID_SPACING_RED);
         }
         if(asteroidBeltRed.collides(rocket.getBounds()) && colorToggle == 2){
-            gsm.set(new MenuState(gsm)); //restart the game
+            //start the explosion countdown and stop the rocket from moving
+            timeLeftGameOverDelay -= dt;
+            rocket.crashRocket();
+            if(timeLeftGameOverDelay < 0){
+                gsm.set(new MenuState(gsm));
+            }
         }
 
         //Logic for blue asteroid belt repositioning/collision
@@ -176,7 +202,12 @@ public class PlayState extends State {
             asteroidBeltBlue.reposition(asteroidBeltBlue.getPosAsteroidBlue().y + ASTEROID_SPACING_BLUE);
         }
         if(asteroidBeltBlue.collides(rocket.getBounds()) && colorToggle == 1){
-            gsm.set(new MenuState(gsm)); //restart the game
+            //start the explosion countdown and stop the rocket from moving
+            timeLeftGameOverDelay -= dt;
+            rocket.crashRocket();
+            if(timeLeftGameOverDelay < 0){
+                gsm.set(new MenuState(gsm));
+            }
         }
 
         //Logic for alien
@@ -184,7 +215,13 @@ public class PlayState extends State {
             alien.reposition(alien.getPosAlien().y + ALIEN_SPACING);
         }
         if(alien.collides(rocket.getBounds())){
-            gsm.set(new MenuState(gsm));
+            //start the explosion countdown and stop the rocket from moving
+            timeLeftGameOverDelay -= dt;
+            rocket.crashRocket();
+            alien.crashedIntoAlien();
+            if(timeLeftGameOverDelay < 0){
+                gsm.set(new MenuState(gsm));
+            }
         }
 
         cam.update();
@@ -215,8 +252,7 @@ public class PlayState extends State {
         }
         sb.draw(asteroidBeltRed.getAsteroidRed(), asteroidBeltRed.getPosAsteroidRed().x, asteroidBeltRed.getPosAsteroidRed().y);
         sb.draw(asteroidBeltBlue.getAsteroidBlue(), asteroidBeltBlue.getPosAsteroidBlue().x, asteroidBeltBlue.getPosAsteroidBlue().y);
-
-        //TODO add an alien that moves back and forth.  They start spawning if score is high enough
+        
         sb.draw(alien.getAlien(), alien.getPosAlien().x, alien.getPosAlien().y);
 
         font.draw(sb, "Score: " + score, 0, rocket.getPosition().y - 10);
@@ -243,5 +279,9 @@ public class PlayState extends State {
         asteroidBeltRed.dispose();
         asteroidBeltBlue.dispose();
         alien.dispose();
+    }
+
+    public boolean isGameOver(){
+        return true;
     }
 }

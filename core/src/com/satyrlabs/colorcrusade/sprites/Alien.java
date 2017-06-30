@@ -26,6 +26,7 @@ public class Alien {
     private Rectangle boundsAlien;
     private Animation alienAnimation;
     private Random rand;
+    private boolean crashed = false;
 
     public Alien(float y){
         alien = new Texture("alienanimation.png");
@@ -44,18 +45,21 @@ public class Alien {
 
         //make the alien move back and forth on the x-axis
 
-        if(posAlien.x < 0){
-            posAlien.x = 0;
-            velocity = 5;
+        if(!crashed){
+            if(posAlien.x < 0){
+                posAlien.x = 0;
+                velocity = 5;
+            }
+            if(posAlien.x > (ColorCrusade.WIDTH / 2) - alien.getWidth() / 3){
+                posAlien.x = (ColorCrusade.WIDTH / 2) - alien.getWidth() / 3;
+                velocity = -5;
+            }
+            velocityAlien.add(velocity, 0);
+            velocityAlien.scl(dt);
+            posAlien.add(velocityAlien.x, 0);
+            velocityAlien.scl(1 / dt);
         }
-        if(posAlien.x > (ColorCrusade.WIDTH / 2) - alien.getWidth() / 3){
-            posAlien.x = (ColorCrusade.WIDTH / 2) - alien.getWidth() / 3;
-            velocity = -5;
-        }
-        velocityAlien.add(velocity, 0);
-        velocityAlien.scl(dt);
-        posAlien.add(velocityAlien.x, 0);
-        velocityAlien.scl(1 / dt);
+
 
         boundsAlien.setPosition(posAlien.x, posAlien.y);
     }
@@ -79,6 +83,12 @@ public class Alien {
 
     public void dispose(){
         alien.dispose();
+    }
+
+    public void crashedIntoAlien(){
+        //stop the alien from moving after crash
+        velocityAlien.x = 0;
+        crashed = true;
     }
 
 }

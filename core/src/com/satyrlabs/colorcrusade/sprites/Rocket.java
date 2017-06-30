@@ -23,6 +23,7 @@ public class Rocket {
     private Rectangle bounds;
     private Animation rocketAnimation;
     Texture texture;
+    private boolean crashed = false;
 
 
     public Rocket(int x, int y){
@@ -45,18 +46,20 @@ public class Rocket {
 
         velocity.scl(1 / dt);  //reverse the previous scaling
 
-        float accelerometerInput = Gdx.input.getAccelerometerX() / (GRAVITATIONAL_ACCELERATION * ACCELEROMETER_SENSITIVITY);
+        //As long as the rocket hasn't crashed, it can move on the x-axis from tilts
+        if(!crashed){
+            float accelerometerInput = Gdx.input.getAccelerometerX() / (GRAVITATIONAL_ACCELERATION * ACCELEROMETER_SENSITIVITY);
 
-        position.x -= dt * accelerometerInput * ROCKET_MOVEMENT_SPEED;
+            position.x -= dt * accelerometerInput * ROCKET_MOVEMENT_SPEED;
 
-        //Stop the rocket from going off screen
-        if(position.x < 0 - (texture.getWidth() / 4)){
-            position.x = ColorCrusade.WIDTH / 2;
+            //Stop the rocket from going off screen
+            if(position.x < 0 - (texture.getWidth() / 4)){
+                position.x = ColorCrusade.WIDTH / 2;
+            }
+            if(position.x > ColorCrusade.WIDTH /2){
+                position.x = 0 - (texture.getWidth() / 4);
+            }
         }
-        if(position.x > ColorCrusade.WIDTH /2){
-            position.x = 0 - (texture.getWidth() / 4);
-        }
-
 
         bounds.setPosition(position.x, position.y);
     }
@@ -75,6 +78,17 @@ public class Rocket {
 
     public void dispose(){
         texture.dispose();
+    }
+
+    public void crashRocket(){
+        //stop movement and cancel the accelerometer
+        velocity.x = 0;
+        velocity.y = 0;
+        crashed = true;
+    }
+
+    public boolean isCrashed(){
+        return crashed;
     }
 
 
