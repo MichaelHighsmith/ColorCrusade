@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.satyrlabs.colorcrusade.ColorCrusade;
+import com.satyrlabs.colorcrusade.sprites.Alien;
 import com.satyrlabs.colorcrusade.sprites.AsteroidBeltBlue;
 import com.satyrlabs.colorcrusade.sprites.AsteroidBeltRed;
 import com.satyrlabs.colorcrusade.sprites.BlockBlue;
@@ -40,6 +41,8 @@ public class PlayState extends State {
     private static final int ASTEROID_SPACING_RED = 4000;
     private static final int ASTEROID_SPACING_BLUE = 4000;
 
+    private static final int ALIEN_SPACING = 2000;
+
     private Rocket rocket;
     private Texture bg;
     private int score;
@@ -55,6 +58,7 @@ public class PlayState extends State {
     private Array<Coin> coins;
     private AsteroidBeltRed asteroidBeltRed;
     private AsteroidBeltBlue asteroidBeltBlue;
+    private Alien alien;
 
     public PlayState(GameStateManager gsm){
 
@@ -72,6 +76,7 @@ public class PlayState extends State {
         coins = new Array<Coin>();
         asteroidBeltRed = new AsteroidBeltRed(ASTEROID_SPACING_RED);
         asteroidBeltBlue = new AsteroidBeltBlue(ASTEROID_SPACING_BLUE);
+        alien = new Alien(ALIEN_SPACING);
 
 
         font = new BitmapFont();
@@ -111,6 +116,8 @@ public class PlayState extends State {
     public void update(float dt){
         handleInput();
         rocket.update(dt);
+        //TODO update the alien once the user hits a certain height
+        alien.update(dt);
         cam.position.y = rocket.getPosition().y + 170;
 
         for(int i = 0; i < blocksRed.size; i++){
@@ -172,6 +179,14 @@ public class PlayState extends State {
             gsm.set(new MenuState(gsm)); //restart the game
         }
 
+        //Logic for alien
+        if(cam.position.y - (cam.viewportHeight / 2) > alien.getPosAlien().y + alien.getAlien().getRegionHeight()){
+            alien.reposition(alien.getPosAlien().y + ALIEN_SPACING);
+        }
+        if(alien.collides(rocket.getBounds())){
+            gsm.set(new MenuState(gsm));
+        }
+
         cam.update();
     }
 
@@ -202,6 +217,8 @@ public class PlayState extends State {
         sb.draw(asteroidBeltBlue.getAsteroidBlue(), asteroidBeltBlue.getPosAsteroidBlue().x, asteroidBeltBlue.getPosAsteroidBlue().y);
 
         //TODO add an alien that moves back and forth.  They start spawning if score is high enough
+        sb.draw(alien.getAlien(), alien.getPosAlien().x, alien.getPosAlien().y);
+
         font.draw(sb, "Score: " + score, 0, rocket.getPosition().y - 10);
         font.draw(sb, "High Score: " + highScore, ColorCrusade.WIDTH / 4 - 10, rocket.getPosition().y - 10);
 
@@ -225,5 +242,6 @@ public class PlayState extends State {
         font.dispose();
         asteroidBeltRed.dispose();
         asteroidBeltBlue.dispose();
+        alien.dispose();
     }
 }

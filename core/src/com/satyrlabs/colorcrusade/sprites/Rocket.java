@@ -17,7 +17,7 @@ import static com.satyrlabs.colorcrusade.Constants.*;
 public class Rocket {
 
     private static final float ACCELERATION = 0.5f;
-    private static final float MAX_VELOCITY = 300.0f;
+    private static final float MAX_VELOCITY = 250.0f;
     private Vector2 position;
     private Vector2 velocity;
     private Rectangle bounds;
