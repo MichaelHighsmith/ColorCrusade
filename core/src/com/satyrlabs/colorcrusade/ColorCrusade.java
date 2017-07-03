@@ -17,6 +17,14 @@ public class ColorCrusade extends ApplicationAdapter {
 	private GameStateManager gsm;
 
 	private SpriteBatch batch;
+
+	AdHandler handler;
+	boolean toggle;
+
+	public ColorCrusade(AdHandler handler){
+		this.handler = handler;
+	}
+
 	
 	@Override
 	public void create () {
@@ -28,6 +36,11 @@ public class ColorCrusade extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+		if(Gdx.input.justTouched()){
+			handler.showAds(toggle);
+			toggle = !toggle;
+		}
+
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		//Tells us the difference between rener times
 		gsm.update(Gdx.graphics.getDeltaTime());
